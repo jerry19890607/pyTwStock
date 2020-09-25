@@ -70,7 +70,14 @@ def main():
             year = args.f[0]
             season = args.f[1]
             typeNum = args.f[2]
-            results = crawl.financial_statement(year, season, typeNum)
+            stockNum = None
+        if len(args.f) == 4:
+            year = args.f[0]
+            season = args.f[1]
+            typeNum = args.f[2]
+            stockNum = args.f[3]
+
+        results = crawl.financial_statement(year, season, typeNum, stockNum)
 
     else:
         parser.error('Date should be assigned with (YYYY MM DD) or none')

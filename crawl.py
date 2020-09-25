@@ -127,7 +127,7 @@ def stock_crawler(stock_list, first_day):
     #    s.enter(1, 0, stock_crawler, argument=(targets,))
     return df
 
-def financial_statement(year, season, typeNum):
+def financial_statement(year, season, typeNum, stockNum):
 
     if year >= 1000:
         year -= 1911
@@ -190,11 +190,13 @@ def financial_statement(year, season, typeNum):
         data.drop(indexNames , inplace=True)
         data.columns = ['代號','名稱','營業收入(百萬)','毛利率(%)','營業利益率(%)','稅前純益率(%)','稅後純益率(%)']
 
-        for count, row in enumerate(data['代號']):
-            if str(row) == '2330':
-                #print (data.iloc[count])
-                return data.iloc[count]
-
+        if stockNum:
+            for count, row in enumerate(data['代號']):
+                if str(row) == str(stockNum):
+                    #print (data.iloc[count])
+                    return data.iloc[count]
+        else:
+            return data
 
     elif typeNum == 4:
         data = pd.concat(dfs[1:], axis=0, sort=False)
