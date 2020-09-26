@@ -147,6 +147,10 @@ def financial_statement(year, season, typeNum, stockNum):
         url = ''
         print('type does not match')
 
+    if stockNum:
+        co_id = stockNum
+    else:
+        co_id = 2330
 
     print('[DBG] ' + url)
     r = requests.post(url, {
@@ -157,9 +161,9 @@ def financial_statement(year, season, typeNum, stockNum):
         'TYPEK':'all',
         'year':str(year),
         'season':str(season),
-        'co_id':2330,
-        'queryName': 2330,
-        'inpuType': 2330
+        'co_id': co_id,
+        'queryName': co_id,
+        'inpuType': co_id
     })
 
     r.encoding = 'utf8'
@@ -199,7 +203,47 @@ def financial_statement(year, season, typeNum, stockNum):
             return data
 
     elif typeNum == 4:
-        data = pd.concat(dfs[1:], axis=0, sort=False)
+
+        thisYear = str(year)
+        lastYear = str(year - 1)
+        arg1 = thisYear + '年第' + str(season) + '季'
+        arg2 = thisYear + '%'
+        arg3 = lastYear + '年第' + str(season) + '季'
+        arg4 = lastYear + '%'
+        arg5 = thisYear + '累計'
+        arg6 = thisYear + '累計%'
+        arg7 = lastYear + '累計'
+        arg8 = lastYear + '累計%'
+
+        data = pd.concat(dfs[1:2], axis=0, sort=False)
+        data.columns = ['項目', arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8,'']
+        del data['']
+        #data.fillna('', inplace=True)    ## Replace nan string to ''
+
+        data[arg1] = data.apply(lambda row: str(round(row[arg1] / 1000000,2)) + 'M', axis=1)
+        data[arg3] = data.apply(lambda row: str(round(row[arg3] / 1000000,2)) + 'M', axis=1)
+        data[arg5] = data.apply(lambda row: str(round(row[arg5] / 1000000,2)) + 'M', axis=1)
+        data[arg7] = data.apply(lambda row: str(round(row[arg7] / 1000000,2)) + 'M', axis=1)
+        data[arg2] = data.apply(lambda row: str(row[arg2]) + '%', axis=1)
+        data[arg4] = data.apply(lambda row: str(row[arg4]) + '%', axis=1)
+        data[arg6] = data.apply(lambda row: str(row[arg6]) + '%', axis=1)
+        data[arg8] = data.apply(lambda row: str(row[arg8]) + '%', axis=1)
+
+        data[arg1] = data[arg1].map(lambda x: x.lstrip('nanM').rstrip(''))
+        data[arg3] = data[arg3].map(lambda x: x.lstrip('nanM').rstrip(''))
+        data[arg5] = data[arg5].map(lambda x: x.lstrip('nanM').rstrip(''))
+        data[arg7] = data[arg7].map(lambda x: x.lstrip('nanM').rstrip(''))
+        data[arg2] = data[arg2].map(lambda x: x.lstrip('nan%').rstrip(''))
+        data[arg4] = data[arg4].map(lambda x: x.lstrip('nan%').rstrip(''))
+        data[arg6] = data[arg6].map(lambda x: x.lstrip('nan%').rstrip(''))
+        data[arg8] = data[arg8].map(lambda x: x.lstrip('nan%').rstrip(''))
+
+        pd.set_option('colheader_justify', 'center')
+        pd.set_option('display.unicode.ambiguous_as_wide', True)
+        pd.set_option('display.unicode.east_asian_width', True)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.width', 500)
     else:
         #data = pd.concat(dfs[1:], axis=0, sort=False).set_index(['公司代號']).apply(lambda s: pd.to_numeric(s, errors='ceorce'))
         data = pd.concat(dfs[1:], axis=0, sort=False).set_index(['公司代號'])

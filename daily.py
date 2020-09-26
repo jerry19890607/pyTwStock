@@ -64,7 +64,8 @@ def main():
     # Ex: python3.7 daily.py --f 2020 2 1
     #     python3.7 daily.py --f 2020 2 2
     #     python3.7 daily.py --f 2020 2 3
-    #     python3.7 daily.py --f 2020 2 4
+    #     python3.7 daily.py --f 2020 2 3 (stockNum)
+    #     python3.7 daily.py --f 2020 2 4 stockNum
     elif args.f:
         if len(args.f) == 3:
             year = args.f[0]
